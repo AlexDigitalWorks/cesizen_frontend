@@ -1,0 +1,244 @@
+<section class="diagnostic-page">
+  <header class="diagnostic-hero">
+    <div>
+      <p class="diagnostic-hero__eyebrow">Auto-diagnostic</p>
+      <h1>Évaluez votre situation en quelques minutes</h1>
+      <p class="diagnostic-hero__text">
+        Répondez aux questions ci-dessous pour obtenir un premier niveau de lecture sur votre situation.
+      </p>
+    </div>
+
+    @if (!authService.authenticated()) {
+      <div class="diagnostic-visitor-banner">
+        Vous pouvez consulter les questions, mais la soumission est réservée aux utilisateurs connectés.
+      </div>
+    }
+  </header>
+
+  @if (isLoading()) {
+    <div class="diagnostic-state">Chargement du questionnaire...</div>
+  }
+
+  @if (loadError()) {
+    <div class="diagnostic-state diagnostic-state--error">{{ loadError() }}</div>
+  }
+
+  @if (!isLoading() && !loadError()) {
+    <section class="diagnostic-panel">
+      <form class="diagnostic-form" [formGroup]="diagnosticForm" (ngSubmit)="submitDiagnostic()">
+        @for (question of questions(); track trackByQuestionId(question)) {
+          <article class="question-card">
+            <div class="question-card__header">
+              <p class="question-card__index">Question {{ $index + 1 }}</p>
+              <h2>{{ question.title }}</h2>
+              <p>{{ question.questionText }}</p>
+              @if (question.helperText) {
+                <p class="question-card__helper">{{ question.helperText }}</p>
+              }
+            </div>
+
+            <div class="choice-grid">
+              @for (choice of question.choices; track choice.score) {
+                <label
+                  class="choice-card"
+                  [class.choice-card--selected]="getAnswerControl(question.id).value === choice.score"
+                  [class.choice-card--invalid]="getAnswerControl(question.id).invalid && getAnswerControl(question.id).touched"
+                  (click)="selectChoice(question.id, choice.score, $event)"
+                >
+                  <input
+                    class="choice-card__input"
+                    type="radio"
+                    [formControl]="getAnswerControl(question.id)"
+                    [value]="choice.score"
+                    [name]="'question-' + question.id"
+                  />
+                  <span class="choice-card__score">{{ choice.score }}</span>
+                  <span class="choice-card__label">{{ choice.label }}</span>
+                </label>
+              }
+            </div>
+
+            @if (getAnswerControl(question.id).invalid && getAnswerControl(question.id).touched) {
+              <p class="diagnostic-feedback diagnostic-feedback--error">
+                Une réponse est obligatoire pour cette question.
+              </p>
+            }
+          </article>
+        }
+
+        @if (submitError()) {
+          <p class="diagnostic-feedback diagnostic-feedback--error">{{ submitError() }}</p>
+        }
+
+        @if (submitSuccess()) {
+          <p class="diagnostic-feedback diagnostic-feedback--success">{{ submitSuccess() }}</p>
+        }
+
+        <div class="diagnostic-actions">
+          <button type="submit" class="diagnostic-button diagnostic-button--primary" [disabled]="isSubmitting()">
+            {{ isSubmitting() ? 'Envoi en cours...' : 'Soumettre mon auto-diagnostic' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (result()) {
+    <section class="diagnostic-result">
+      <div class="diagnostic-result__header">
+        <p class="diagnostic-result__eyebrow">Résultat</p>
+        <h2>{{ severityLabel(result()?.severity) }}</h2>
+      </div>
+
+      <div class="diagnostic-result__metrics">
+        <div class="metric-card">
+          <span>Score obtenu</span>
+          <strong>{{ result()?.totalScore }}</strong>
+        </div>
+        <div class="metric-card">
+          <span>Score maximum</span>
+          <strong>{{ result()?.maxScore }}</strong>
+        </div>
+        <div class="metric-card">
+          <span>Passé le</span>
+          <strong>{{ formatSubmittedAt(result()!.submittedAt) }}</strong>
+        </div>
+      </div>
+
+      <p class="diagnostic-result__message">{{ severityMessage(result()?.severity) }}</p>
+
+      <div class="diagnostic-result__answers">
+        @for (answer of result()!.answers; track answer.questionId) {
+          <div class="answer-row">
+            <span>Question {{ answer.questionId }}</span>
+            <strong>{{ answer.answerLabel }} ({{ answer.selectedScore }})</strong>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (authService.isAdmin()) {
+    <section class="admin-panel">
+      <header class="admin-panel__header">
+        <div>
+          <p class="diagnostic-hero__eyebrow">Administration</p>
+          <h2>Gérer les questions</h2>
+          <p>Créez, modifiez, activez ou supprimez les questions du parcours d’auto-diagnostic.</p>
+        </div>
+      </header>
+
+      <div class="admin-layout">
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h3>Questions existantes</h3>
+          </div>
+
+          @if (adminLoading()) {
+            <div class="diagnostic-state">Chargement de l’administration...</div>
+          }
+
+          @if (adminError()) {
+            <div class="diagnostic-state diagnostic-state--error">{{ adminError() }}</div>
+          }
+
+          @if (adminDeleteError()) {
+            <p class="diagnostic-feedback diagnostic-feedback--error">{{ adminDeleteError() }}</p>
+          }
+
+          @if (!adminLoading() && !adminError()) {
+            <div class="admin-question-list">
+              @for (question of adminQuestions(); track trackByAdminQuestionId(question)) {
+                <article class="admin-question-card" [class.admin-question-card--inactive]="!question.active">
+                  <div class="admin-question-card__content">
+                    <div class="admin-question-card__meta">
+                      <span>#{{ question.sortOrder }}</span>
+                      <span>{{ question.active ? 'Active' : 'Inactive' }}</span>
+                    </div>
+                    <h4>{{ question.title }}</h4>
+                    <p>{{ question.questionText }}</p>
+                    @if (question.helperText) {
+                      <p class="question-card__helper">{{ question.helperText }}</p>
+                    }
+                  </div>
+
+                  <div class="admin-question-card__actions">
+                    <button type="button" class="diagnostic-button" (click)="startAdminEdit(question)">
+                      Modifier
+                    </button>
+                    <button type="button" class="diagnostic-button" (click)="toggleAdminQuestionActive(question)">
+                      {{ question.active ? 'Désactiver' : 'Réactiver' }}
+                    </button>
+                    <button type="button" class="diagnostic-button diagnostic-button--danger" (click)="deleteAdminQuestion(question.id)">
+                      Supprimer
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h3>{{ editingAdminId() === null ? 'Nouvelle question' : 'Modifier la question' }}</h3>
+            @if (editingAdminId() !== null) {
+              <button type="button" class="diagnostic-button" (click)="resetAdminForm()">
+                Annuler l’édition
+              </button>
+            }
+          </div>
+
+          <form class="admin-form" [formGroup]="adminQuestionForm" (ngSubmit)="saveAdminQuestion()">
+            <label class="admin-field">
+              <span>Titre</span>
+              <input type="text" formControlName="title" />
+            </label>
+
+            <label class="admin-field">
+              <span>Question</span>
+              <textarea rows="4" formControlName="questionText"></textarea>
+            </label>
+
+            <label class="admin-field">
+              <span>Aide</span>
+              <textarea rows="3" formControlName="helperText"></textarea>
+            </label>
+
+            <div class="admin-form__row">
+              <label class="admin-field">
+                <span>Ordre</span>
+                <input type="number" min="1" formControlName="sortOrder" />
+              </label>
+
+              <label class="admin-field admin-field--checkbox">
+                <input type="checkbox" formControlName="active" />
+                <span>Question active</span>
+              </label>
+            </div>
+
+            @if (adminQuestionForm.invalid && (adminQuestionForm.touched || adminQuestionForm.dirty)) {
+              <p class="diagnostic-feedback diagnostic-feedback--error">
+                Le titre, le texte de question et un ordre valide sont obligatoires.
+              </p>
+            }
+
+            @if (adminSubmitError()) {
+              <p class="diagnostic-feedback diagnostic-feedback--error">{{ adminSubmitError() }}</p>
+            }
+
+            @if (adminSubmitSuccess()) {
+              <p class="diagnostic-feedback diagnostic-feedback--success">{{ adminSubmitSuccess() }}</p>
+            }
+
+            <div class="diagnostic-actions">
+              <button type="submit" class="diagnostic-button diagnostic-button--primary" [disabled]="isAdminSaving()">
+                {{ isAdminSaving() ? 'Enregistrement...' : editingAdminId() === null ? 'Créer la question' : 'Mettre à jour la question' }}
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  }
+</section>

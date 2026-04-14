@@ -1,0 +1,138 @@
+.auth-page {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+  background:
+    radial-gradient(circle at top, rgba(124, 92, 67, 0.16), transparent 30%),
+    linear-gradient(180deg, #f4efe7 0%, #ebe1d3 100%);
+}
+
+.auth-card {
+  width: min(100%, 30rem);
+  padding: 2rem;
+  border: 1px solid rgba(78, 55, 37, 0.14);
+  border-radius: 1.5rem;
+  background: rgba(255, 250, 244, 0.94);
+  box-shadow: 0 1.5rem 4rem rgba(61, 44, 32, 0.12);
+}
+
+.auth-card__intro h1 {
+  margin: 0;
+  color: #2d2017;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+}
+
+.auth-card__intro p {
+  margin: 0.75rem 0 0;
+  color: #685648;
+  line-height: 1.5;
+}
+
+.auth-card__eyebrow {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16rem;
+  font-size: 0.75rem;
+  color: #9a6d44;
+}
+
+.auth-card__switch {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1.75rem 0;
+}
+
+.auth-switch,
+.auth-submit {
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+}
+
+.auth-switch {
+  padding: 0.8rem 1rem;
+  background: #efe4d5;
+  color: #4f3e30;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.auth-switch.active {
+  background: #2d2017;
+  color: #fff7f0;
+  transform: translateY(-1px);
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-field {
+  display: grid;
+  gap: 0.45rem;
+  color: #4f3e30;
+  font-size: 0.95rem;
+}
+
+.auth-field input {
+  padding: 0.95rem 1rem;
+  border: 1px solid #d6c4b3;
+  border-radius: 0.95rem;
+  background: #fffdfa;
+  color: #2d2017;
+  font: inherit;
+}
+
+.auth-field input:focus {
+  outline: 2px solid rgba(154, 109, 68, 0.25);
+  border-color: #9a6d44;
+}
+
+.auth-feedback {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.95rem;
+  font-size: 0.92rem;
+}
+
+.auth-feedback--error {
+  background: #fde8e4;
+  color: #8d2f20;
+}
+
+.auth-feedback--success {
+  background: #e6f4ea;
+  color: #1f6a36;
+}
+
+.auth-submit {
+  padding: 0.95rem 1.2rem;
+  background: linear-gradient(135deg, #9a6d44 0%, #7c5130 100%);
+  color: #fff9f3;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 1rem 2rem rgba(124, 81, 48, 0.22);
+}
+
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.auth-submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+@media (max-width: 640px) {
+  .auth-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+    border-radius: 1.2rem;
+  }
+}

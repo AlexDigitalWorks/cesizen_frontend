@@ -1,0 +1,140 @@
+.info-page {
+  padding: 3rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.info-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #2a2018;
+}
+
+.info-header p {
+  margin: 0 0 2rem;
+  color: #4f4338;
+}
+
+.info-admin-banner {
+  margin-top: -1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: #efe4d5;
+  color: #5d4027;
+}
+
+.info-state {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: #f9f6f1;
+  color: #4f4338;
+}
+
+.info-state.error {
+  background: #f4d8d8;
+  color: #6b2a2a;
+}
+
+.info-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.info-card {
+  padding: 1.75rem;
+  border-radius: 20px;
+  background: #fbf8f2;
+  box-shadow: 0 12px 26px rgba(46, 33, 20, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(46, 33, 20, 0.18);
+}
+
+.info-card__summary h2 {
+  margin: 0 0 0.6rem;
+  color: #2a2018;
+}
+
+.info-card__summary p,
+.info-card__content p {
+  margin: 0;
+  color: #4f4338;
+  line-height: 1.6;
+}
+
+.info-card__content {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0d8cd;
+}
+
+.info-edit-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-field {
+  display: grid;
+  gap: 0.45rem;
+  color: #4f4338;
+}
+
+.info-field input,
+.info-field textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d8cbbb;
+  border-radius: 14px;
+  background: #fffdfa;
+  color: #2a2018;
+  font: inherit;
+  resize: vertical;
+}
+
+.info-edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.info-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  background: #e8ddd0;
+  color: #4f4338;
+  cursor: pointer;
+  font: inherit;
+}
+
+.info-button.primary {
+  background: #2a2018;
+  color: #f9f6f1;
+}
+
+.info-feedback {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+}
+
+.info-feedback.error {
+  background: #f4d8d8;
+  color: #6b2a2a;
+}
+
+.info-feedback.success {
+  background: #e6f4ea;
+  color: #1f6a36;
+}
+
+@media (max-width: 720px) {
+  .info-page {
+    padding: 2rem 1.5rem;
+  }
+}

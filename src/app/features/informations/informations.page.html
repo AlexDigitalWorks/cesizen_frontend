@@ -1,0 +1,89 @@
+<section class="info-page">
+  <header class="info-header">
+    <h1>Informations</h1>
+    <p>Les ressources de presse publiées par le backend.</p>
+    @if (authService.isAdmin()) {
+      <p class="info-admin-banner">Mode administration actif : vous pouvez modifier les articles.</p>
+    }
+  </header>
+
+  @if (isLoading()) {
+    <div class="info-state">Chargement...</div>
+  }
+
+  @if (hasError()) {
+    <div class="info-state error">Impossible de charger les ressources.</div>
+  }
+
+  @if (!isLoading() && !hasError()) {
+    <div class="info-list">
+      @for (resource of resources(); track resource.id) {
+        <article class="info-card" (click)="toggleResource(resource.id)">
+          <div class="info-card__summary">
+            <h2>{{ resource.title }}</h2>
+            <p>{{ resource.description || 'Aucune description disponible.' }}</p>
+          </div>
+
+          @if (selectedId() === resource.id) {
+            <div class="info-card__content">
+              @if (editingId() === resource.id && authService.isAdmin()) {
+                <form
+                  class="info-edit-form"
+                  [formGroup]="editForm"
+                  (click)="$event.stopPropagation()"
+                  (ngSubmit)="saveResource(resource.id, $event)"
+                >
+                  <label class="info-field">
+                    <span>Titre</span>
+                    <input type="text" formControlName="title" />
+                  </label>
+
+                  <label class="info-field">
+                    <span>Description</span>
+                    <textarea rows="3" formControlName="description"></textarea>
+                  </label>
+
+                  <label class="info-field">
+                    <span>Contenu</span>
+                    <textarea rows="8" formControlName="content"></textarea>
+                  </label>
+
+                  @if (editForm.invalid && (editForm.touched || editForm.dirty)) {
+                    <p class="info-feedback error">Le titre est obligatoire.</p>
+                  }
+
+                  @if (saveError()) {
+                    <p class="info-feedback error">{{ saveError() }}</p>
+                  }
+
+                  @if (saveSuccess()) {
+                    <p class="info-feedback success">{{ saveSuccess() }}</p>
+                  }
+
+                  <div class="info-edit-actions">
+                    <button type="submit" class="info-button primary" [disabled]="isSaving()">
+                      {{ isSaving() ? 'Enregistrement...' : 'Enregistrer' }}
+                    </button>
+                    <button type="button" class="info-button" (click)="cancelEdit($event)">
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <p>{{ resource.content || resource.description || 'Contenu indisponible.' }}</p>
+
+                @if (authService.isAdmin()) {
+                  <div class="info-edit-actions">
+                    <button type="button" class="info-button primary" (click)="startEdit(resource, $event)">
+                      Modifier l'article
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

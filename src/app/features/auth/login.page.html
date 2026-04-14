@@ -1,0 +1,93 @@
+<section class="auth-page">
+  <div class="auth-card">
+    <div class="auth-card__intro">
+      <p class="auth-card__eyebrow">Cesizen</p>
+      <h1>{{ isLoginMode() ? 'Connexion' : 'Creer un compte' }}</h1>
+      <p>
+        {{ isLoginMode()
+          ? 'Connectez-vous avec votre identifiant et votre mot de passe.'
+          : 'Inscrivez-vous pour acceder a votre espace Cesizen.' }}
+      </p>
+    </div>
+
+    <div class="auth-card__switch">
+      <button
+        type="button"
+        class="auth-switch"
+        [class.active]="isLoginMode()"
+        (click)="setMode('login')"
+      >
+        Connexion
+      </button>
+      <button
+        type="button"
+        class="auth-switch"
+        [class.active]="!isLoginMode()"
+        (click)="setMode('register')"
+      >
+        Inscription
+      </button>
+    </div>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+      @if (!isLoginMode()) {
+        <label class="auth-field">
+          <span>Nom d'utilisateur</span>
+          <input
+            type="text"
+            formControlName="username"
+            autocomplete="username"
+            placeholder="alex"
+          />
+        </label>
+      }
+
+      <label class="auth-field">
+        <span>Adresse email</span>
+        <input
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="alex@exemple.com"
+        />
+      </label>
+
+      <label class="auth-field">
+        <span>Mot de passe</span>
+        <input
+          type="password"
+          formControlName="password"
+          autocomplete="{{ isLoginMode() ? 'current-password' : 'new-password' }}"
+          placeholder="••••••••"
+        />
+      </label>
+
+      @if (submitted() && form.invalid) {
+        <p class="auth-feedback auth-feedback--error">
+          @if (isLoginMode()) {
+            Une adresse email valide et un mot de passe sont obligatoires.
+          } @else {
+            Un nom d'utilisateur, une adresse email valide et un mot de passe
+            sont obligatoires.
+          }
+        </p>
+      }
+
+      @if (errorMessage()) {
+        <p class="auth-feedback auth-feedback--error">{{ errorMessage() }}</p>
+      }
+
+      @if (successMessage()) {
+        <p class="auth-feedback auth-feedback--success">{{ successMessage() }}</p>
+      }
+
+      <button type="submit" class="auth-submit" [disabled]="loading()">
+        {{ loading()
+          ? 'Traitement...'
+          : isLoginMode()
+            ? 'Se connecter'
+            : "S'inscrire" }}
+      </button>
+    </form>
+  </div>
+</section>
